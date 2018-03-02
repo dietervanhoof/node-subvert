@@ -5,7 +5,11 @@
   "main": "subvert.js",
   "dependencies": {
     "amqplib": "^0.5.2",
-    "console-stamp": "^0.2.5"
+    "bluebird": "^3.5.1",
+    "callback-count": "^0.2.0",
+    "console-stamp": "^0.2.5",
+    "coworkers": "^0.7.4",
+    "rabbitmq-schema": "^2.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,23 +1,36 @@
-const amqplib = require('amqplib');
+const coworkers = require('coworkers');
+const amqplib = require("amqplib");
+const log = require("./logger.service");
+const consumeOpts = {};
 
-function Listener(broker) {
-	this.broker = broker;
-	return this;
+function Listener(config) {
+    this.config = config;
+    return this;
 }
 
-Listener.prototype.listen = function(queuename) {
-	amqplib.connect(this.broker).then((conn)=> {
-		return conn.createChannel();
-	}).then(function(ch) {
-        return ch.assertQueue(queuename).then(function(ok) {
-            return ch.consume(queuename, function(msg) {
-                if (msg !== null) {
-                    console.log(msg.content.toString());
-                    ch.ack(msg);
-                }
-            });
-        });
-    }).catch(console.warn);
+Listener.prototype.initialize = function(middleware) {
+    this.app = coworkers();
+    /*
+        Pass all middleware to the consumer
+     */
+    middleware.forEach((mid) => {
+        this.app.use(mid);
+    });
+
+    this.app.prefetch(1, false);
+
+    this.app.queue(this.config.RABBIT_MQ_REQUEST_QUEUE, consumeOpts, function * () {
+        this.ack = true;
+        log.debug("I finished with this message");
+    });
+
+    this.app.on('error', function (err) {
+        this.nack = true;
+        console.error(err)
+    });
+};
+Listener.prototype.listen = function() {
+    this.app.connect(this.config.broker);
 };
 
 module.exports = Listener;
