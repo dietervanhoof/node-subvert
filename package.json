@@ -1,0 +1,18 @@
+{
+  "name": "subvert",
+  "version": "1.0.0",
+  "description": "Converts XIF to SRT",
+  "main": "subvert.js",
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "console-stamp": "^0.2.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "subvert"
+  ],
+  "author": "Dieter",
+  "license": "MIT"
+}
