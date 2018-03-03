@@ -70,6 +70,7 @@ listener.initialize(
             yield next;
         }
     ],
+    // Processing
     [
         function *(next) {
             const subtitleCovertService = new SubtitleConvertService(this.message.content.source_file, this.message.content.destination_file);
@@ -85,6 +86,7 @@ listener.initialize(
             yield next;
         }
     ],
+    // After processing
     [
         function *(next) {
             log.debug("Validating response message");

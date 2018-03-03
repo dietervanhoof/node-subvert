@@ -30,9 +30,11 @@ The service will create exchanges, queues and bindings on RabbitMQ. Incoming and
 ```
 
 ## Example response
+```
 {
     "outcome": "success",
     "correlation_id": "abcdefg",
     "source_file": "/Users/dieter/input.xif",
     "destination_file": "/Users/dieter/output.srt"
 }
+```
