@@ -60,8 +60,17 @@ rabbitvalidationservice.validateRabbitSchema(options.broker, topologySchema);
 const listener = new Listener(options, topologySchema);
 
 // Initialize the listener by passing the functions to execute
-listener.initialize([
-        // Processing function
+listener.initialize(
+    // Before processing
+    [
+        // Request validation function
+        function *(next) {
+            log.debug("Validating request message");
+            topologySchema.validateMessage(options.RABBIT_MQ_REQUEST_EXCHANGE, options.RABBIT_MQ_REQUEST_EXCHANGE, this.message.content);
+            yield next;
+        }
+    ],
+    [
         function *(next) {
             const subtitleCovertService = new SubtitleConvertService(this.message.content.source_file, this.message.content.destination_file);
             yield subtitleCovertService.convert(next);
@@ -73,6 +82,13 @@ listener.initialize([
                 source_file: this.message.content.source_file,
                 destination_file: this.message.content.destination_file
             };
+            yield next;
+        }
+    ],
+    [
+        function *(next) {
+            log.debug("Validating response message");
+            topologySchema.validateMessage(options.RABBIT_MQ_RESPONSE_EXCHANGE, options.RABBIT_MQ_RESPONSE_EXCHANGE, this.state.response);
             yield next;
         },
         // Success publish function

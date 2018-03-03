@@ -21,7 +21,7 @@ function Listener(config, topologySchema) {
  * @param {function[]} middleware   the processing that needs to be done for a message
  * @param {function} error  the function to execute on error
  */
-Listener.prototype.initialize = function(middleware, error) {
+Listener.prototype.initialize = function(before, processing, after, error) {
     this.app = coworkers(this.topologySchema);
     const that = this;
 
@@ -42,18 +42,19 @@ Listener.prototype.initialize = function(middleware, error) {
         yield next
     });
 
-    // Incoming message validation
-    this.app.use(function * (next) {
-        log.debug("Validating request message");
-        this.app.schema.validateMessage(that.config.RABBIT_MQ_REQUEST_EXCHANGE, that.config.RABBIT_MQ_REQUEST_EXCHANGE, this.message.content);
-        yield next;
+    // Pass all before functions to the consumer
+    before.forEach((b) => {
+        this.app.use(b);
     });
 
-    /*
-        Pass all middleware to the consumer
-     */
-    middleware.forEach((mid) => {
-        this.app.use(mid);
+    // Pass the processing functions to the consumer
+    processing.forEach((p) => {
+        this.app.use(p);
+    });
+
+    // Pass the after functions to the consumer
+    after.forEach((a) => {
+        this.app.use(a);
     });
 
     this.app.prefetch(1, false);
