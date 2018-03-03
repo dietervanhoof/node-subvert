@@ -18,7 +18,7 @@ node subvert.js \
         --RABBIT_MQ_PASSWORD=guest
 ```
 
-The service will create exchanges, queues and bindings on RabbitMQ. Incoming ~~and outgoing~~ messages against a JSON schema.
+The service will create exchanges, queues and bindings on RabbitMQ. Incoming and outgoing messages against a JSON schema.
 
 ## Example request
 ```
