@@ -1,4 +1,8 @@
 const util = require("util");
+/**
+ * All arguments that are required for startup
+ * @type {[*]}
+ */
 const required_arguments = [
     "RABBIT_MQ_HOST",
     "RABBIT_MQ_PORT",
@@ -13,6 +17,10 @@ const required_arguments = [
     "RABBIT_MQ_PASSWORD"
 ];
 
+/**
+ * Parses all arguments passed with this process and generates a broker argument
+ * @returns {argv}
+ */
 const parseArguments = () => {
     const argv = require('minimist')(process.argv.slice(2));
     required_arguments.forEach((argument) => {

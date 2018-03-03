@@ -2,7 +2,11 @@ const Promise = require("bluebird");
 const amqp = Promise.promisifyAll(require('amqplib'));
 const log = require("./logger.service");
 
-// assert all exchanges in the schema
+/**
+ * Asserts all exchanges in the schema
+ * @param {Object} channel  the amqp channel
+ * @param {RabbitSchema} fullSchema the schema to validate
+ */
 function assertExchanges (channel, fullSchema) {
     let exchanges = fullSchema.getExchanges();
 
@@ -14,6 +18,11 @@ function assertExchanges (channel, fullSchema) {
     })
 }
 
+/**
+ * Asserts all queues in the schema
+ * @param {Object} channel   the amqp channel
+ * @param {RabbitSchema} fullSchema    the schema to validate
+ */
 function assertQueues (channel, fullSchema) {
     let queues = fullSchema.getQueues();
     queues.forEach(function (queue) {
@@ -23,6 +32,11 @@ function assertQueues (channel, fullSchema) {
     })
 }
 
+/**
+ * Asserts all bindings in the schema
+ * @param {Object} channel  the amqp channel
+ * @param {RabbitSchema} fullSchema    the schema to validate
+ */
 function assertBindings (channel, fullSchema) {
     let bindings = fullSchema.getBindings();
 
@@ -42,16 +56,19 @@ function assertBindings (channel, fullSchema) {
         }
     })
 }
+
+/**
+ * Assert all exchanges, queues and bindings in the schema
+ * @param {String} broker    the broker to connect to
+ * @param {RabbitSchema} schema    the schema to validate
+ */
 function validateRabbitSchema(broker, schema) {
     let conn =  amqp.connect(broker);
     conn.then((conn) => {
         conn.createChannel()
             .then((ch) => {
-                    log.debug("Asserting exchanges");
                     assertExchanges(ch, schema);
-                    log.debug("Asserting queues");
                     assertQueues(ch, schema);
-                    log.debug("Asserting bindings");
                     assertBindings(ch, schema);
                 }
             )});

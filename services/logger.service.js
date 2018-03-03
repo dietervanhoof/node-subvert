@@ -11,7 +11,7 @@ const error = (message) => {
 };
 
 const info = (message) => {
-    console.info(message);
+    console.info(chalk.white(message));
 };
 
 const success = (message) => {

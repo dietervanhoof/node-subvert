@@ -6,10 +6,15 @@
   "dependencies": {
     "amqplib": "^0.5.2",
     "bluebird": "^3.5.1",
-    "callback-count": "^0.2.0",
+    "chalk": "^2.3.2",
+    "chardet": "^0.4.2",
     "console-stamp": "^0.2.5",
     "coworkers": "^0.7.4",
-    "rabbitmq-schema": "^2.0.0"
+    "divmod": "0.0.3",
+    "minimist": "^1.2.0",
+    "numeral": "^2.0.6",
+    "rabbitmq-schema": "^2.0.0",
+    "xml-stream": "^0.4.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
