@@ -1,5 +1,6 @@
 # node-subvert
-Microservice that converts XIF to SRT using RabbitMQ.
+Microservice that converts XIF to SRT using RabbitMQ based on my [node-microservice-template
+](https://github.com/dietervanhoof/node-microservice-template).
 
 ## Usage
 Start the project by running
