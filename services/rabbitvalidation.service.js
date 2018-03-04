@@ -1,5 +1,4 @@
-const Promise = require("bluebird");
-const amqp = Promise.promisifyAll(require('amqplib'));
+const amqp = require('amqplib');
 const log = require("./logger.service");
 
 /**

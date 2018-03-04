@@ -4,7 +4,6 @@ const log = require("./logger.service");
 const timeutils = require("../utils/timeutils");
 const util = require('util');
 const chardet = require('chardet');
-const Promise = require("bluebird");
 
 /**
  * Subtitle convertor service

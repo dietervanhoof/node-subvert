@@ -5,7 +5,6 @@
   "main": "subvert.js",
   "dependencies": {
     "amqplib": "^0.5.2",
-    "bluebird": "^3.5.1",
     "callback-count": "^0.2.0",
     "chalk": "^2.3.2",
     "chardet": "^0.4.2",
