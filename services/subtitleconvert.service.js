@@ -4,6 +4,7 @@ const log = require("./logger.service");
 const timeutils = require("../utils/timeutils");
 const util = require('util');
 const chardet = require('chardet');
+const numeral = require("numeral");
 
 /**
  * Subtitle convertor service
@@ -39,11 +40,37 @@ SubtitleConvertService.prototype.convert = function() {
     return new Promise((resolve, reject) => {
         that.xml.on("end", function() {
             const offset = that.parseHeaderTimes(that.result.FileHeader);
+            // Check if the offset and start differ by 10 hours
+            if (that.start) {
+                const temp = that.validateOffsetAndStartTime(offset, that.start, that.end);
+                that.start = temp.newStartTime;
+                that.end = temp.newEndTime;
+            }
+            that.validateOffsetAndStartTime(offset, that.start, that.end);
             that.transformAndWrite(offset.startTime, that.destinationFile);
-            log.debug("Finished reading XML. Resolving");
+            log.debug("Finished reading XML.");
             resolve();
         });
     })
+};
+
+SubtitleConvertService.prototype.validateOffsetAndStartTime = function(offset, start, end) {
+    if ((timeutils.getHours(offset.startTime) - timeutils.getHours(start)) === 10) {
+        log.warn("The offset and starttime differ 10 hours. Offsetting start and end by 10 hours...");
+        const newStartTime = util.format("%s:%s:%s:%s",
+            numeral(timeutils.getHours(start) + 10).format("00"),
+            numeral(timeutils.getMinutes(start)).format("00"),
+            numeral(timeutils.getSeconds(start)).format("00"),
+            numeral(timeutils.getHundreds(start)).format("00"));
+        const newEndTime = util.format("%s:%s:%s:%s",
+            numeral(timeutils.getHours(end) + 10).format("00"),
+            numeral(timeutils.getMinutes(end)).format("00"),
+            numeral(timeutils.getSeconds(end)).format("00"),
+            numeral(timeutils.getHundreds(end)).format("00"));
+        log.warn("New start: " + newStartTime);
+        log.warn("New end: " + newEndTime);
+        return {newStartTime, newEndTime}
+    }
 };
 
 /**
