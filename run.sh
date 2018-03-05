@@ -10,4 +10,5 @@ nodemon subvert.js \
 	--RABBIT_MQ_REQUEST_TOPIC_TYPE=direct \
 	--RABBIT_MQ_RESPONSE_TOPIC_TYPE=direct \
 	--RABBIT_MQ_USER=guest \
-	--RABBIT_MQ_PASSWORD=guest
+	--RABBIT_MQ_PASSWORD=guest \
+	--NUMBER_OF_WORKERS=1

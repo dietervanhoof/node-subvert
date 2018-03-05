@@ -14,7 +14,8 @@ const required_arguments = [
     "RABBIT_MQ_REQUEST_TOPIC_TYPE",
     "RABBIT_MQ_RESPONSE_TOPIC_TYPE",
     "RABBIT_MQ_USER",
-    "RABBIT_MQ_PASSWORD"
+    "RABBIT_MQ_PASSWORD",
+    "NUMBER_OF_WORKERS"
 ];
 
 /**
@@ -34,6 +35,7 @@ const parseArguments = () => {
         argv.RABBIT_MQ_HOST,
         argv.RABBIT_MQ_PORT,
         argv.RABBIT_MQ_VHOST);
+    process.env.COWORKERS_WORKERS_PER_QUEUE = argv.NUMBER_OF_WORKERS;
     return argv;
 };
 
