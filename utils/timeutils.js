@@ -28,7 +28,32 @@ const splitTime = function(time) {
     return util.format("%s:%s:%s", numeral(r3[0]).format("00"), numeral(r3[1]).format("00"), numeral(r2[1]).format("00.000").replace(".", ","));
 };
 
+/**
+ * Gets the amount of hours for a time of format '10:00:50:07'
+ * @param {String} time
+ * @returns {Number}
+ */
+const getHours = function(time) {
+    return parseInt(time.split(":")[0]);
+};
+
+const getMinutes = function(time) {
+    return parseInt(time.split(":")[1]);
+};
+
+const getSeconds = function(time) {
+    return parseInt(time.split(":")[2]);
+};
+
+const getHundreds = function(time) {
+    return parseInt(time.split(":")[3]);
+};
+
 module.exports = {
     timeInSecs: timeInSecs,
-    splitTime: splitTime
+    splitTime: splitTime,
+    getHours: getHours,
+    getMinutes: getMinutes,
+    getSeconds: getSeconds,
+    getHundreds: getHundreds
 };
