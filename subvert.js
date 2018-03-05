@@ -18,6 +18,12 @@ const requestMessageSchema = {
         },
         destination_file: {
             type: 'string'
+        },
+        start: {
+            type: 'string'
+        },
+        end: {
+            type: 'string'
         }
     },
     required: [
@@ -38,6 +44,12 @@ const responseMessageSchema = {
             type: 'string'
         },
         destination_file: {
+            type: 'string'
+        },
+        start: {
+            type: 'string'
+        },
+        end: {
             type: 'string'
         },
         outcome: {
@@ -73,7 +85,10 @@ listener.initialize(
     // Processing
     [
         function *(next) {
-            const subtitleCovertService = new SubtitleConvertService(this.message.content.source_file, this.message.content.destination_file);
+            const subtitleCovertService = new SubtitleConvertService(this.message.content.source_file,
+                this.message.content.destination_file,
+                this.message.content.start,
+                this.message.content.end);
             yield subtitleCovertService.convert(next);
             log.debug("Subtitle was written!");
             // Put the response in the state object

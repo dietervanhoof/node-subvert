@@ -12,9 +12,11 @@ const chardet = require('chardet');
  * @constructor
  * @returns {SubtitleConvertService}
  **/
-function SubtitleConvertService(sourceFile, destinationFile) {
+function SubtitleConvertService(sourceFile, destinationFile, start, end) {
     this.sourceFile = sourceFile;
     this.destinationFile = destinationFile;
+    this.start = start;
+    this.end = end;
     this.result = [];
     return this;
 }
@@ -52,12 +54,32 @@ SubtitleConvertService.prototype.convert = function() {
 SubtitleConvertService.prototype.transformAndWrite = function(offset, destinationFile) {
     var writeStream = fs.createWriteStream(destinationFile, { flags : 'w' });
     const offsetInSecs = timeutils.timeInSecs(offset.split(":")[0] + ":00:00:00");
-    this.result.FileBody.ContentBlock.forEach((r) => {
-        this.writeContentBlock(r, writeStream, offsetInSecs);
-    });
+    // Filter out the ContentBlocks that are outside of the timerange
+    if (this.start && this.end) {
+        this.result.FileBody.ContentBlock.filter((data) => this.isWithinRange(data, this)).forEach((r) => {
+            this.writeContentBlock(r, writeStream, offsetInSecs);
+        });
+    } else {
+        this.result.FileBody.ContentBlock.forEach((r) => {
+            this.writeContentBlock(r, writeStream, offsetInSecs);
+        });
+    }
     writeStream.end();
 };
 
+/**
+ * Parses the timeIn and timeOut values and turns them into seconds
+ * @param {Object} contentBlock the contentBlock to parse the data from
+ * @param {Number} offsetInSecs the offset in seconds
+ * @returns {{timeInInSecs: number, timeOutInSecs: number}}
+ */
+SubtitleConvertService.prototype.parseTimingObject = function(contentBlock, offsetInSecs) {
+    const timeIn = contentBlock.ThreadedObject.TimingObject.TimeIn.$.value;
+    const timeOut = contentBlock.ThreadedObject.TimingObject.TimeOut.$.value;
+    const timeInInSecs = timeutils.timeInSecs(timeIn) - offsetInSecs;
+    const timeOutInSecs = timeutils.timeInSecs(timeOut) - offsetInSecs;
+    return {timeInInSecs, timeOutInSecs};
+};
 /**
  * Writes a single content block in SRT format to the specified writeStream
  * @param {Object} contentBlock The JSON representation of the ContentBlock XML element as returned by 'xml-stream'
@@ -65,9 +87,7 @@ SubtitleConvertService.prototype.transformAndWrite = function(offset, destinatio
  * @param {Number} offsetInSecs the offset of the XIF file in seconds
  */
 SubtitleConvertService.prototype.writeContentBlock = function(contentBlock, writeStream, offsetInSecs) {
-    const timeIn = contentBlock.ThreadedObject.TimingObject.TimeIn.$.value, timeOut = contentBlock.ThreadedObject.TimingObject.TimeOut.$.value;
-    const timeInInSecs = timeutils.timeInSecs(timeIn) - offsetInSecs;
-    const timeOutInSecs = timeutils.timeInSecs(timeOut) - offsetInSecs;
+    const {timeInInSecs, timeOutInSecs} = this.parseTimingObject(contentBlock, offsetInSecs);
 
     writeStream.write(timeutils.splitTime(timeInInSecs) + " --> " + timeutils.splitTime(timeOutInSecs) + "\n");
     contentBlock.ThreadedObject.Content.SubtitleText.Paragraph.Text.forEach((d) => {
@@ -103,6 +123,24 @@ SubtitleConvertService.prototype.detectEncoding = function(file) {
  */
 SubtitleConvertService.prototype.readFile = function(file, encoding) {
     return fs.createReadStream(file, { encoding: encoding, autoClose: true });
+};
+
+/**
+ * Checks if a value is between two values
+ * @param {Number} value    the value to check
+ * @param {Number} lower    the lower limit
+ * @param {Number} upper    the upper limit
+ * @returns {boolean}
+ */
+SubtitleConvertService.prototype.isBetween = function(value, lower, upper) {
+    return (lower < value && value < upper);
+};
+
+SubtitleConvertService.prototype.isWithinRange = function(contentBlock, that) {
+    const {timeInInSecs, timeOutInSecs} = that.parseTimingObject(contentBlock, 0);
+    const start = timeutils.timeInSecs(that.start);
+    const end = timeutils.timeInSecs(that.end);
+    return (timeOutInSecs >= start && timeInInSecs <= end);
 };
 
 module.exports = SubtitleConvertService;
