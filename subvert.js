@@ -116,7 +116,6 @@ listener.initialize(
     ],
     // Error function
     function (err, context) {
-        //this.ack = true;
         context.state.response = {
             outcome: "failed",
             correlation_id: context.message.content.correlation_id,
